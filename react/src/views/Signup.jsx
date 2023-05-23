@@ -1,6 +1,7 @@
 import { LockClosedIcon } from "@heroicons/react/24/solid/index.js";
 import {Link} from "react-router-dom";
 import {useState} from "react";
+import axiosClient from "../axios.js";
 
 export default function Signup() {
 
@@ -8,6 +9,26 @@ export default function Signup() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const [error, setError] = useState({__html: ''});
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+
+        setError({__html: ''});
+
+        axiosClient.post('/signup', {
+            name: fullName,
+            email,
+            password,
+            password_confirmation: passwordConfirmation
+        })
+            .then(({data}) => {
+                console.log(data);
+            })
+            .catch(({response}) => {
+                console.log(response);
+            });
+    }
 
     return (
         <>
@@ -23,7 +44,7 @@ export default function Signup() {
             </p>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form className="space-y-6" action="#" method="POST">
+                    <form onSubmit={onSubmit} className="space-y-6" action="#" method="POST">
                         <div>
                             <label htmlFor="full-name" className="block text-sm font-medium leading-6 text-gray-900">
                                 Full Name
