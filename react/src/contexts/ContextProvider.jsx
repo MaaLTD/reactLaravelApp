@@ -15,7 +15,7 @@ export const ContextProvider = ({children}) => {
         imageUrl: 'https://drive.google.com/file/d/0B3ytW-RW0re-TFIwcDhiZ0FVMlU/view?usp=share_link&resourcekey=0-vepuNyJepSkPcOeOd3OsdQ'
     });
 
-    const [userToken, setUserToken] = useState(null);
+    const [userToken, setUserToken] = useState('null');
 
     return (
         <StateContext.Provider
