@@ -180,8 +180,17 @@ const tmpSurveys = [
 export const ContextProvider = ({children}) => {
 
     const [currentUser, setCurrentUser] = useState({});
-    const [userToken, setUserToken] = useState(null);
+    const [userToken, _setUserToken] = useState(localStorage.getItem('token') || null);
     const [surveys, setSurveys] = useState(tmpSurveys);
+
+    const setUserToken = (token) => {
+        if(token) {
+            localStorage.setItem('token', token);
+        } else {
+            localStorage.removeItem('token')
+        }
+        _setUserToken(token);
+    }
 
     return (
         <StateContext.Provider

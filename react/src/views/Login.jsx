@@ -1,13 +1,55 @@
 import { LockClosedIcon } from "@heroicons/react/24/solid/index.js";
+import axiosClient from "../axios.js";
+import {useState} from "react";
+import {useStateContext} from "../contexts/ContextProvider.jsx";
+import {Link} from "react-router-dom";
 
 export default function Login() {
+
+    const {setCurrentUser, setUserToken} = useStateContext();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState({__html: ''});
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+
+        setError({__html: ''});
+
+        axiosClient.post('/login', {
+            email,
+            password,
+        })
+            .then(({data}) => {
+                setCurrentUser(data.user);
+                setUserToken(data.token);
+            })
+            .catch(({response}) => {
+                if(response.data.errors) {
+                    const Errors = Object
+                        .values(response.data.errors)
+                        .reduce((accum, next) => [...accum, ...next], []);
+                    console.log(Errors);
+                    setError({__html: Errors.join('<br/>')})
+                }
+                console.error(response);
+            });
+    }
+
     return (
         <>
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
                 Sign in to your account
             </h2>
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                <form className="space-y-6" action="#" method="POST">
+
+                {error.__html && (
+                    <div
+                        className="bg-red-500 rounded py-2 px-3 text-white"
+                        dangerouslySetInnerHTML={error}></div>
+                )}
+
+                <form onSubmit={onSubmit} className="space-y-6" action="#" method="POST">
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                             Email address
@@ -19,7 +61,9 @@ export default function Login() {
                                 type="email"
                                 autoComplete="email"
                                 required
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="indent-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
@@ -29,6 +73,7 @@ export default function Login() {
                             <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                                 Password
                             </label>
+
                             <div className="text-sm">
                                 <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
                                     Forgot password?
@@ -40,9 +85,10 @@ export default function Login() {
                                 id="password"
                                 name="password"
                                 type="password"
-                                autoComplete="current-password"
                                 required
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="indent-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
@@ -80,9 +126,9 @@ export default function Login() {
 
                 <p className="mt-10 text-center text-sm text-gray-500">
                     Not a member?{' '}
-                    <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                        Start a 14 day free trial
-                    </a>
+                    <Link to="/signup" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                        Signup for free
+                    </Link>
                 </p>
             </div>
         </>

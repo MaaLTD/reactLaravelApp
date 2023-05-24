@@ -43,13 +43,13 @@ export default function Signup() {
     return (
         <>
                 <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                    Login with your account
+                    Signup for free
                 </h2>
 
             <p className="mt-10 text-center text-sm text-gray-500">
-                Not a member?{' '} Signup for free{' '}
+                Or {' '}
                 <Link to="/login" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                    Start a 14 day free trial
+                    Login with your account
                 </Link>
             </p>
 
