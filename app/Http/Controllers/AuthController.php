@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function signup(SignupRequest $request)
     {
-        $data = $request->validate();
+        $data = $request->validated();
 
         /** @var User $user */
         $user = User::create([
@@ -31,7 +31,7 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $credentials = $request->validate();
+        $credentials = $request->validated();
         $remember = $credentials['remember'] ?? false;
         unset($credentials['remember']);
 

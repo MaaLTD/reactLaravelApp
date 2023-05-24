@@ -2,9 +2,11 @@ import { LockClosedIcon } from "@heroicons/react/24/solid/index.js";
 import {Link} from "react-router-dom";
 import {useState} from "react";
 import axiosClient from "../axios.js";
+import {useStateContext} from "../contexts/ContextProvider.jsx";
 
 export default function Signup() {
 
+    const {setCurrentUser, setUserToken} = useStateContext();
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -23,10 +25,18 @@ export default function Signup() {
             password_confirmation: passwordConfirmation
         })
             .then(({data}) => {
-                console.log(data);
+                setCurrentUser(data.user);
+                setUserToken(data.token);
             })
             .catch(({response}) => {
-                console.log(response);
+                if(response.data.errors) {
+                    const Errors = Object
+                        .values(response.data.errors)
+                        .reduce((accum, next) => [...accum, ...next], []);
+                    console.log(Errors);
+                    setError({__html: Errors.join('<br/>')})
+                }
+                console.error(response);
             });
     }
 
@@ -44,6 +54,13 @@ export default function Signup() {
             </p>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+
+                    {error.__html && (
+                        <div
+                            className="bg-red-500 rounded py-2 px-3 text-white"
+                            dangerouslySetInnerHTML={error}></div>
+                    )}
+
                     <form onSubmit={onSubmit} className="space-y-6" action="#" method="POST">
                         <div>
                             <label htmlFor="full-name" className="block text-sm font-medium leading-6 text-gray-900">
@@ -55,7 +72,9 @@ export default function Signup() {
                                     name="name"
                                     type="text"
                                     required
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    className="indent-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
                         </div>
@@ -71,7 +90,9 @@ export default function Signup() {
                                     type="email"
                                     autoComplete="email"
                                     required
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="indent-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
                         </div>
@@ -88,7 +109,9 @@ export default function Signup() {
                                     name="password"
                                     type="password"
                                     required
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="indent-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
                         </div>
@@ -105,7 +128,9 @@ export default function Signup() {
                                     name="password_confirmation"
                                     type="password"
                                     required
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    value={passwordConfirmation}
+                                    onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                    className="indent-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
                         </div>
