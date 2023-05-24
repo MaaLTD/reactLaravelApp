@@ -1,18 +1,15 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import {Bars3Icon, BellIcon, UserIcon, XMarkIcon} from '@heroicons/react/24/outline'
-import {Navigate, NavLink, Outlet} from "react-router-dom";
+import {Link, Navigate, NavLink, Outlet} from "react-router-dom";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
+import axiosClient from "../axios.js";
 
 const navigation = [
     { name: 'Dashboard', to: '/' },
     { name: 'Surveys', to: '/surveys' },
     // { name: 'Projects', href: '#', current: false },
 ]
-const logout = (e) => {
-    e.preventDefault();
-    console.log("logout");
-}
 
 const profileSettings = (e) => {
     e.preventDefault();
@@ -24,10 +21,10 @@ const profileInformation = (e) => {
     console.log("profile information");
 }
 
+
 const userNavigation = [
     { name: 'Your Profile', href: '#', onClick: (e) => profileInformation(e) },
     { name: 'Settings', href: '#', onClick: (e) => profileSettings(e) },
-    { name: 'Sign out', href: "#", onClick:(e) => logout(e) },
 ]
 
 
@@ -37,10 +34,25 @@ function classNames(...classes) {
 
 export default function DefaultLayout() {
 
-    const { currentUser, userToken } = useStateContext();
+    const { currentUser, userToken, setCurrentUser, setUserToken } = useStateContext();
 
     if(!userToken) {
         return <Navigate to="login"/>
+    }
+
+    const logout = (e) => {
+        e.preventDefault();
+
+        axiosClient.post('/logout')
+            .then((res) => {
+                if(res.data.success) {
+                    setUserToken(null);
+                    setCurrentUser({});
+                }
+            })
+            .catch((error) => {
+                console.error(error)
+            });
     }
 
     return (
@@ -125,6 +137,15 @@ export default function DefaultLayout() {
                                                                 )}
                                                             </Menu.Item>
                                                         ))}
+                                                        <a
+                                                            href="#"
+                                                            onClick={(ev) => logout(ev)}
+                                                            className={
+                                                                "hover:bg-gray-100 block px-4 py-2 text-sm text-gray-700"
+                                                            }
+                                                        >
+                                                            Sign out
+                                                        </a>
                                                     </Menu.Items>
                                                 </Transition>
                                             </Menu>
